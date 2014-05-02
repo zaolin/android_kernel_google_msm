@@ -990,7 +990,7 @@ static ssize_t bin_intvec(struct file *file,
 		int i;
 
 		set_fs(KERNEL_DS);
-		result = vfs_read(file, buffer, BUFSZ - 1, &pos);
+		result = vfs_read(file, (char __force_user *)buffer, BUFSZ - 1, &pos);
 		set_fs(old_fs);
 		if (result < 0)
 			goto out_kfree;
@@ -1035,7 +1035,7 @@ static ssize_t bin_intvec(struct file *file,
 		}
 
 		set_fs(KERNEL_DS);
-		result = vfs_write(file, buffer, str - buffer, &pos);
+		result = vfs_write(file, (const char __force_user *)buffer, str - buffer, &pos);
 		set_fs(old_fs);
 		if (result < 0)
 			goto out_kfree;
@@ -1068,7 +1068,7 @@ static ssize_t bin_ulongvec(struct file *file,
 		int i;
 
 		set_fs(KERNEL_DS);
-		result = vfs_read(file, buffer, BUFSZ - 1, &pos);
+		result = vfs_read(file, (char __force_user *)buffer, BUFSZ - 1, &pos);
 		set_fs(old_fs);
 		if (result < 0)
 			goto out_kfree;
@@ -1113,7 +1113,7 @@ static ssize_t bin_ulongvec(struct file *file,
 		}
 
 		set_fs(KERNEL_DS);
-		result = vfs_write(file, buffer, str - buffer, &pos);
+		result = vfs_write(file, (const char __force_user *)buffer, str - buffer, &pos);
 		set_fs(old_fs);
 		if (result < 0)
 			goto out_kfree;
@@ -1139,7 +1139,7 @@ static ssize_t bin_uuid(struct file *file,
 		int i;
 
 		set_fs(KERNEL_DS);
-		result = vfs_read(file, buf, sizeof(buf) - 1, &pos);
+		result = vfs_read(file, (char __force_user *)buf, sizeof(buf) - 1, &pos);
 		set_fs(old_fs);
 		if (result < 0)
 			goto out;
@@ -1186,7 +1186,7 @@ static ssize_t bin_dn_node_address(struct file *file,
 		__le16 dnaddr;
 
 		set_fs(KERNEL_DS);
-		result = vfs_read(file, buf, sizeof(buf) - 1, &pos);
+		result = vfs_read(file, (char __force_user *)buf, sizeof(buf) - 1, &pos);
 		set_fs(old_fs);
 		if (result < 0)
 			goto out;
@@ -1234,7 +1234,7 @@ static ssize_t bin_dn_node_address(struct file *file,
 				le16_to_cpu(dnaddr) & 0x3ff);
 
 		set_fs(KERNEL_DS);
-		result = vfs_write(file, buf, len, &pos);
+		result = vfs_write(file, (const char __force_user *)buf, len, &pos);
 		set_fs(old_fs);
 		if (result < 0)
 			goto out;

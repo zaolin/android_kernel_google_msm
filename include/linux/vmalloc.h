@@ -17,6 +17,10 @@ struct vm_area_struct;		/* vma defining user mapping in mm_types.h */
 #define VM_LOWMEM	0x00000040	/* Tracking of direct mapped lowmem */
 /* bits [20..32] reserved for arch specific ioremap internals */
 
+#if defined(CONFIG_MODULES) && defined(CONFIG_X86) && defined(CONFIG_PAX_KERNEXEC)
+#define VM_KERNEXEC    0x00000040      /* allocate from executable kernel memory range */
+#endif
+
 /*
  * Maximum alignment for ioremap() regions.
  * Can be overriden by arch-specific value.
@@ -63,7 +67,7 @@ extern void *vmalloc_32_user(unsigned long size);
 extern void *__vmalloc(unsigned long size, gfp_t gfp_mask, pgprot_t prot);
 extern void *__vmalloc_node_range(unsigned long size, unsigned long align,
 			unsigned long start, unsigned long end, gfp_t gfp_mask,
-			pgprot_t prot, int node, const void *caller);
+			pgprot_t prot, int node, const void *caller) __size_overflow(1);
 extern void vfree(const void *addr);
 
 extern void *vmap(struct page **pages, unsigned int count,
@@ -73,7 +77,7 @@ extern void vunmap(const void *addr);
 extern int remap_vmalloc_range(struct vm_area_struct *vma, void *addr,
 							unsigned long pgoff);
 void vmalloc_sync_all(void);
- 
+
 /*
  *	Lowlevel-APIs (not for driver use!)
  */
@@ -125,8 +129,8 @@ extern struct vm_struct *alloc_vm_area(size_t size, pte_t **ptes);
 extern void free_vm_area(struct vm_struct *area);
 
 /* for /dev/kmem */
-extern long vread(char *buf, char *addr, unsigned long count);
-extern long vwrite(char *buf, char *addr, unsigned long count);
+extern long vread(char *buf, char *addr, unsigned long count) __size_overflow(3);
+extern long vwrite(char *buf, char *addr, unsigned long count) __size_overflow(3);
 
 /*
  *	Internals.  Dont't use..
